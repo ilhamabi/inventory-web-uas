@@ -15,12 +15,18 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip3 install -r requirements.txt'
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Unit Tests with Coverage') {
             steps {
+                sh '. venv/bin/activate'
                 sh 'pytest --cov=app --cov-report=xml'
             }
         }
