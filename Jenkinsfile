@@ -1,26 +1,21 @@
 pipeline {
     agent any
 
-    tools {
-        python 'Python3'  // Harus sudah dikonfigurasi di Jenkins Global Tools
-    }
-
     environment {
-        SONARQUBE_SCANNER = 'SonarScanner'     // Name from Jenkins Global Tool Config
-        DOCKER_IMAGE = 'inventory-web:latest'  // Nama image yang akan dibuat
+        SONARQUBE_SCANNER = 'SonarScanner' // Sesuaikan dengan konfigurasi Sonar di Jenkins
+        DOCKER_IMAGE = 'inventory-web:latest' // Ganti sesuai nama image yang kamu inginkan
     }
 
     stages {
-        stage('Checkout Source Code') {
+        stage('Clone Repository') {
             steps {
-                // Otomatis clone repo GitHub (jika pipeline dari SCM Git)
-                checkout scm
+                echo 'Code sudah otomatis ditarik dari GitHub oleh Jenkins.'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip3 install -r requirements.txt'
             }
         }
 
@@ -38,7 +33,7 @@ pipeline {
             }
         }
 
-        stage('Build and Deploy Docker') {
+        stage('Build & Deploy with Docker') {
             steps {
                 script {
                     sh 'docker build -t $DOCKER_IMAGE .'
@@ -50,5 +45,4 @@ pipeline {
         }
     }
 }
-
 
