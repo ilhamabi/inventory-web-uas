@@ -26,8 +26,10 @@ pipeline {
 
         stage('Run Unit Tests with Coverage') {
             steps {
-                sh '. venv/bin/activate'
-                sh 'pytest --cov=app --cov-report=xml'
+               sh '''
+                    . venv/bin/activate
+                    pytest --cov=app --cov-report=xml
+               '''
             }
         }
 
