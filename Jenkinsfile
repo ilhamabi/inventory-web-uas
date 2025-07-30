@@ -10,6 +10,8 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 echo 'Code sudah otomatis ditarik dari GitHub oleh Jenkins.'
+                sh 'pwd'
+                sh 'ls -la'
             }
         }
 
