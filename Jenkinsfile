@@ -49,7 +49,7 @@ pipeline {
                     sh 'docker build -t $DOCKER_IMAGE .'
                     sh 'docker stop inventory-web || true'
                     sh 'docker rm inventory-web || true'
-                    sh 'docker run -d --name inventory-web -p 5000:5000 $DOCKER_IMAGE'
+                    sh 'docker run -d --name inventory-web -p 5000:5000 -v $WORKSPACE/logs:/var/log/app $DOCKER_IMAGE'
                 }
             }
         }
