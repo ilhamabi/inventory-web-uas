@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, Response
 import sqlite3
 import logging
+from logging.handlers import RotatingFileHandler
+import os
 from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
@@ -10,10 +12,31 @@ app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Inventory Web App Info', version='1.0.0')
 
-# Logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Logging ke file + stdout
+log_dir = '/var/log/app'
+log_file = os.path.join(log_dir, 'app.log')
 
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+# Rotating File Handler
+file_handler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=3)
+file_handler.setLevel(logging.INFO)
+file_formatter = logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
+file_handler.setFormatter(file_formatter)
+
+# StreamHandler (stdout) → tetap bisa dilihat di docker logs
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+stream_handler.setFormatter(file_formatter)
+
+# Logger setup
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
+# Database setup
 def init_db():
     conn = sqlite3.connect('inventory.db')
     c = conn.cursor()
@@ -79,7 +102,6 @@ def delete(id):
     logger.warning(f"Item dihapus (ID: {id})")
     return redirect(url_for('index'))
 
-# Tambahan untuk menghindari error 404 pada /metrics
 @app.route('/metrics')
 def metrics_custom():
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
