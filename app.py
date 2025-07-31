@@ -13,7 +13,7 @@ metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Inventory Web App Info', version='1.0.0')
 
 # Logging ke file + stdout
-log_dir = '/var/log/app'
+log_dir = '/tmp/appp'
 log_file = os.path.join(log_dir, 'app.log')
 
 if not os.path.exists(log_dir):
