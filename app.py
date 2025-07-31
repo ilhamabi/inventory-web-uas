@@ -13,11 +13,12 @@ metrics = PrometheusMetrics(app)
 metrics.info('app_info', 'Inventory Web App Info', version='1.0.0')
 
 # Logging ke file + stdout
-log_dir = '/tmp/appp'
+log_dir = os.environ.get('LOG_DIR', '/tmp/app')
 log_file = os.path.join(log_dir, 'app.log')
 
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
+
 
 # Rotating File Handler
 file_handler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=3)
@@ -105,6 +106,13 @@ def delete(id):
 @app.route('/metrics')
 def metrics_custom():
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+@app.route('/simulate-log')
+def simulate_log():
+    logger.info("Simulasi log berhasil.")
+    logger.warning("Simulasi peringatan log.")
+    logger.error("Simulasi error log.")
+    return "Log berhasil disimulasikan!"
 
 if __name__ == '__main__':
     init_db()
