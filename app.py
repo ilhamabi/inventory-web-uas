@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, Response
 import sqlite3
 import logging
 from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__)
 
@@ -77,6 +78,11 @@ def delete(id):
     conn.close()
     logger.warning(f"Item dihapus (ID: {id})")
     return redirect(url_for('index'))
+
+# Tambahan untuk menghindari error 404 pada /metrics
+@app.route('/metrics')
+def metrics_custom():
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 if __name__ == '__main__':
     init_db()
